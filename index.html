@@ -350,14 +350,15 @@
         }
         .empty-msg { text-align: center; color: #8a7a6a; padding: 30px 0; }
 
-        .fig-caption {
+        /* ===== 页脚 ===== */
+        .footer {
             text-align: center;
-            font-size: 0.88rem;
-            color: #6a5542;
-            margin-top: 12px;
-            font-style: italic;
+            font-size: 0.75rem;
+            color: #a09080;
+            padding-top: 20px;
+            margin-top: 10px;
             border-top: 1px solid #ece2d6;
-            padding-top: 10px;
+            letter-spacing: 0.5px;
         }
 
         @media (max-width: 700px) {
@@ -415,7 +416,6 @@
         </div>
 
         <div class="entry-grid" id="entryGrid"></div>
-        <div class="fig-caption">图X：字形录入界面（按三类俗字分类展示）</div>
     </div>
 
     <!-- ============================================================ -->
@@ -557,21 +557,6 @@
 
             </div>
         </div>
-
-        <div style="margin-top:14px; padding:12px 18px; background:#f6f0e8; border-radius:10px; font-size:0.9rem; color:#5a4a3a;">
-            💡 <strong>图片加载说明：</strong>请将以下图片与网页放在同一文件夹：<br>
-            <span style="background:#e8ddd0; padding:2px 10px; border-radius:12px; display:inline-block; margin:4px 4px 0 0;">zhao1.jpg, zhao2.jpg, zhao3.jpg, zhao6.jpg</span> （字样代表图）<br>
-            <span style="background:#e8ddd0; padding:2px 10px; border-radius:12px; display:inline-block; margin:4px 4px 0 0;">zhao7.jpg ~ zhao9.jpg</span> （曌字型）<br>
-            <span style="background:#e8ddd0; padding:2px 10px; border-radius:12px; display:inline-block; margin:4px 4px 0 0;">zhao10.jpg ~ zhao21.jpg</span> （各字样字型，具体分组见下方）<br>
-            <span style="color:#b08968;">• 照甲字型：zhao10.jpg, zhao11.jpg, zhao12.jpg</span><br>
-            <span style="color:#b08968;">• 照乙字型：zhao13.jpg, zhao14.jpg</span><br>
-            <span style="color:#b08968;">• 照丙字型：zhao15.jpg, zhao16.jpg</span><br>
-            <span style="color:#b08968;">• 照丁字型：zhao17.jpg, zhao18.jpg</span><br>
-            <span style="color:#b08968;">• 照戊字型：zhao19.jpg, zhao20.jpg</span><br>
-            <span style="color:#b08968;">• 照己字型：zhao21.jpg</span><br>
-            <span style="color:#b08968; font-weight:600;">注意：zhao4.jpg、zhao5.jpg、zhao22.jpg 不再需要。</span>
-        </div>
-        <div class="fig-caption">图X+1：“照”字四级层级标注示例（字型位置自动加载碑刻字形图片）</div>
     </div>
 
     <!-- ============================================================ -->
@@ -593,7 +578,6 @@
             <div class="ft-item"><span class="label">例句</span><span class="desc">包含该字形的石刻原文</span></div>
             <div class="ft-item"><span class="label">字形类别</span><span class="desc">传承俗字 / 变异俗字 / 民族古文字</span></div>
         </div>
-        <div class="fig-caption">图X+2：数据库核心字段结构</div>
     </div>
 
     <!-- ============================================================ -->
@@ -617,8 +601,10 @@
             </div>
         </div>
         <div id="searchResults" class="search-results"></div>
-        <div class="fig-caption">图X+3：检索界面（按层级筛选 + 关键词搜索）</div>
     </div>
+
+    <!-- ===== 页脚 ===== -->
+    <div class="footer">广西边境石刻俗字字料库 · 耿嘉 25300407</div>
 
 </div>
 
