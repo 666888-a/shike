@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广西边境石刻俗字字料库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f5f0eb;
+            font-family: 'Segoe UI', 'Noto Serif SC', serif;
+            color: #2c2c2c;
+            padding: 30px 20px;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #b89b7b;
+            padding-bottom: 18px;
+        }
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #4a3222;
+            letter-spacing: 4px;
+        }
+        .header .sub {
+            color: #7a5f4a;
+            margin-top: 6px;
+            font-size: 1rem;
+        }
+
+        /* ===== 层级颜色图例（纯颜色说明） ===== */
+        .legend-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 35px;
+            justify-content: center;
+            background: #e8ddd0;
+            padding: 10px 24px;
+            border-radius: 40px;
+            margin-bottom: 30px;
+        }
+        .legend-row .leg-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #3e2f23;
+        }
+        .legend-row .leg-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+        }
+        .leg-color.c-字种 { background: #b08968; }
+        .leg-color.c-字式 { background: #d4a373; }
+        .leg-color.c-字样 { background: #7aa5c2; }
+        .leg-color.c-字型 { background: #9b9b7a; }
+        .leg-color.c-民族 { background: #b58a7a; }
+
+        /* ===== 步骤导航 ===== */
+        .steps-nav {
+            display: flex;
+            justify-content: space-between;
+            background: #e8ddd0;
+            border-radius: 50px;
+            padding: 8px 20px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .steps-nav .step {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4a3a2e;
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+        }
+        .steps-nav .step:hover { background: #d6c8b8; }
+        .steps-nav .step.active { background: #4a3222; color: #fff; }
+
+        .section-card {
+            background: #fffcf7;
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 35px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            border: 1px solid #ece2d6;
+        }
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #3e2f23;
+            border-left: 6px solid #b89b7b;
+            padding-left: 16px;
+            margin-bottom: 16px;
+        }
+        .section-desc {
+            color: #6a5542;
+            margin-bottom: 18px;
+            font-size: 0.96rem;
+            line-height: 1.7;
+        }
+
+        /* ===== 字形采集 ===== */
+        .entry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 18px;
+        }
+        .entry-card {
+            background: #f8f4ee;
+            border-radius: 14px;
+            padding: 14px 16px;
+            border: 1px solid #ddd2c4;
+            transition: 0.2s;
+        }
+        .entry-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .entry-card .char-img {
+            background: #e8ddd0;
+            height: 72px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.6rem;
+            font-weight: 500;
+            color: #3e2f23;
+            margin-bottom: 8px;
+            border: 1px dashed #b89b7b;
+        }
+        .entry-card .field {
+            font-size: 0.82rem;
+            color: #5a4a3a;
+            margin: 3px 0;
+        }
+        .entry-card .field span {
+            font-weight: 600;
+            color: #3e2f23;
+            display: inline-block;
+            width: 58px;
+        }
+        .entry-card .tag {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 4px;
+        }
+
+        /* 层级颜色 */
+        .tag-字种 { background: #b08968; }
+        .tag-字式 { background: #d4a373; }
+        .tag-字样 { background: #7aa5c2; }
+        .tag-字型 { background: #9b9b7a; }
+        .tag-民族古文字 { background: #b58a7a; }
+
+        .level-字种 { background: #b08968; }
+        .level-字式 { background: #d4a373; }
+        .level-字样 { background: #7aa5c2; }
+        .level-字型 { background: #9b9b7a; }
+
+        /* ===== 树形结构 ===== */
+        .tree {
+            padding-left: 18px;
+            border-left: 3px solid #b89b7b;
+        }
+        .tree-node {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            padding: 5px 0;
+            flex-wrap: wrap;
+            cursor: pointer;
+        }
+        .tree-node .level-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 14px;
+            border-radius: 30px;
+            color: #fff;
+            white-space: nowrap;
+        }
+        .tree-node .char-example {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #2c1f15;
+        }
+        .tree-node .char-desc {
+            font-size: 0.85rem;
+            color: #5a4a3a;
+            background: #f6f0e8;
+            padding: 2px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tree-node .char-desc img {
+            height: 30px;
+            border-radius: 4px;
+            border: 1px solid #ddd2c4;
+        }
+        .tree-level {
+            padding-left: 28px;
+            border-left: 2px dashed #d6c8b8;
+            margin-left: 8px;
+        }
+        .variant-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-left: 8px;
+            align-items: center;
+        }
+        .variant-img {
+            height: 48px;
+            width: auto;
+            border: 1px solid #d6c8b8;
+            border-radius: 6px;
+            background: #faf6f0;
+            padding: 2px;
+            object-fit: contain;
+        }
+        .variant-img-fallback {
+            display: inline-block;
+            background: #f0e7dd;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #3e2f23;
+        }
+        .tree-toggle .arrow {
+            display: inline-block;
+            transition: 0.2s;
+            margin-right: 4px;
+        }
+        .tree-toggle .arrow.open { transform: rotate(90deg); }
+        .tree-collapsible { overflow: hidden; transition: max-height 0.3s ease; }
+        .tree-collapsible.closed { max-height: 0 !important; }
+
+        /* ===== 字段结构 ===== */
+        .field-table {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 4px 20px;
+            background: #f8f4ee;
+            padding: 18px 22px;
+            border-radius: 14px;
+            border: 1px solid #ddd2c4;
+        }
+        .field-table .ft-item { display: contents; }
+        .field-table .ft-item .label {
+            font-weight: 600;
+            color: #3e2f23;
+            padding: 5px 0;
+            border-bottom: 1px dashed #ddd2c4;
+        }
+        .field-table .ft-item .desc {
+            padding: 5px 0;
+            color: #5a4a3a;
+            border-bottom: 1px dashed #ddd2c4;
+        }
+        .field-table .ft-item:last-child .label,
+        .field-table .ft-item:last-child .desc { border-bottom: none; }
+
+        /* ===== 检索 ===== */
+        .search-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .search-area input {
+            flex: 1;
+            min-width: 180px;
+            padding: 10px 16px;
+            border: 1px solid #c9b6a1;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            background: #fff;
+            outline: none;
+            font-family: inherit;
+        }
+        .search-area input:focus { border-color: #b08968; }
+        .search-area .filters {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .search-area .filters button {
+            padding: 5px 16px;
+            border: 1px solid #c9b6a1;
+            background: transparent;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+            color: #4a3a2e;
+        }
+        .search-area .filters button:hover { background: #e8ddd0; }
+        .search-area .filters button.active {
+            background: #4a3222;
+            color: #fff;
+            border-color: #4a3222;
+        }
+
+        .search-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+        }
+        .result-item {
+            background: #f8f4ee;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #ddd2c4;
+            text-align: center;
+        }
+        .result-item .ri-char { font-size: 2rem; font-weight: 500; color: #2c1f15; }
+        .result-item .ri-info { font-size: 0.8rem; color: #5a4a3a; margin-top: 4px; }
+        .result-item .ri-layer {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 6px;
+        }
+        .empty-msg { text-align: center; color: #8a7a6a; padding: 30px 0; }
+
+        .fig-caption {
+            text-align: center;
+            font-size: 0.88rem;
+            color: #6a5542;
+            margin-top: 12px;
+            font-style: italic;
+            border-top: 1px solid #ece2d6;
+            padding-top: 10px;
+        }
+
+        @media (max-width: 700px) {
+            .section-card { padding: 18px; }
+            .tree { padding-left: 10px; }
+            .tree-level { padding-left: 14px; }
+            .field-table { grid-template-columns: 1fr; }
+            .field-table .ft-item .label { border-bottom: none; }
+            .field-table .ft-item .desc { border-bottom: 1px solid #ddd2c4; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ===== 头部 ===== -->
+    <div class="header">
+        <h1>📜 广西边境石刻俗字字料库</h1>
+        <div class="sub">基于“字型 — 字样 — 字式 — 字种”四级框架</div>
+    </div>
+
+    <!-- ===== 层级颜色图例（纯颜色，无三类俗字） ===== -->
+    <div class="legend-row">
+        <span class="leg-item"><span class="leg-color c-字种"></span> 字种</span>
+        <span class="leg-item"><span class="leg-color c-字式"></span> 字式</span>
+        <span class="leg-item"><span class="leg-color c-字样"></span> 字样</span>
+        <span class="leg-item"><span class="leg-color c-字型"></span> 字型</span>
+        <span class="leg-item"><span class="leg-color c-民族"></span> 民族古文字</span>
+    </div>
+
+    <!-- ===== 步骤导航 ===== -->
+    <div class="steps-nav">
+        <button class="step active" data-target="step1">① 字形采集</button>
+        <button class="step" data-target="step2">② 层级标注</button>
+        <button class="step" data-target="step3">③ 字段结构</button>
+        <button class="step" data-target="step4">④ 检索功能</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 步骤1：字形采集 -->
+    <!-- ============================================================ -->
+    <div class="section-card" id="step1">
+        <div class="section-title">1. 字形采集与录入</div>
+        <div class="section-desc">
+            每一条字料记录：石刻出处、原字形（图片）、正字对应、例句、字形类别。
+            字形类别分为<strong>传承俗字</strong>、<strong>变异俗字</strong>、<strong>民族古文字</strong>三大类。
+            以下按类别分别展示录入样例。
+        </div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;" id="categoryTabs">
+            <button class="active" data-cat="all" style="padding:6px 22px;border:1px solid #c9b6a1;background:transparent;border-radius:30px;font-size:0.9rem;cursor:pointer;font-weight:500;font-family:inherit;color:#4a3a2e;">全部</button>
+            <button data-cat="传承俗字" style="padding:6px 22px;border:1px solid #c9b6a1;background:transparent;border-radius:30px;font-size:0.9rem;cursor:pointer;font-weight:500;font-family:inherit;color:#4a3a2e;">传承俗字</button>
+            <button data-cat="变异俗字" style="padding:6px 22px;border:1px solid #c9b6a1;background:transparent;border-radius:30px;font-size:0.9rem;cursor:pointer;font-weight:500;font-family:inherit;color:#4a3a2e;">变异俗字</button>
+            <button data-cat="民族古文字" style="padding:6px 22px;border:1px solid #c9b6a1;background:transparent;border-radius:30px;font-size:0.9rem;cursor:pointer;font-weight:500;font-family:inherit;color:#4a3a2e;">民族古文字</button>
+        </div>
+
+        <div class="entry-grid" id="entryGrid"></div>
+        <div class="fig-caption">图X：字形录入界面（按三类俗字分类展示）</div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 步骤2：层级标注 -->
+    <!-- ============================================================ -->
+    <div class="section-card" id="step2">
+        <div class="section-title">2. 层级属性标注</div>
+        <div class="section-desc">
+            依据“字型 — 字样 — 字式 — 字种”四级框架进行标注。
+            以“照”字为例，展示从字种 → 字式 → 字样 → 字型的完整归并路径。
+            点击节点箭头可展开/收起子层级。
+        </div>
+
+        <div class="tree" id="treeContainer">
+            <!-- 字种：照 -->
+            <div class="tree-node tree-toggle" data-target="tree-level-1">
+                <span class="arrow open">▶</span>
+                <span class="level-tag level-字种">字种</span>
+                <span class="char-example">照</span>
+                <span class="char-desc">记录“照”这个词</span>
+            </div>
+            <div class="tree-level tree-collapsible open" id="tree-level-1">
+                
+                <!-- 字式：照 -->
+                <div class="tree-node tree-toggle" data-target="tree-level-2-1">
+                    <span class="arrow open">▶</span>
+                    <span class="level-tag level-字式">字式</span>
+                    <span class="char-example">照</span>
+                    <span class="char-desc">从火昭声</span>
+                </div>
+                <div class="tree-level tree-collapsible open" id="tree-level-2-1">
+                    
+                    <!-- 字样1：照甲（有图片） -->
+                    <div class="tree-node tree-toggle" data-target="tree-level-3-1">
+                        <span class="arrow open">▶</span>
+                        <span class="level-tag level-字样">字样</span>
+                        <span class="char-example">照甲</span>
+                        <span class="char-desc"><img src="zhao1.jpg" alt="zhao1"> 样式1</span>
+                    </div>
+                    <div class="tree-level tree-collapsible open" id="tree-level-3-1">
+                        <div class="tree-node">
+                            <span class="level-tag level-字型">字型</span>
+                            <span class="variant-list" id="variant-zhao-style1"></span>
+                        </div>
+                    </div>
+
+                    <!-- 字样2：照乙（有图片） -->
+                    <div class="tree-node tree-toggle" data-target="tree-level-3-2">
+                        <span class="arrow open">▶</span>
+                        <span class="level-tag level-字样">字样</span>
+                        <span class="char-example">照乙</span>
+                        <span class="char-desc"><img src="zhao2.jpg" alt="zhao2"> 样式2</span>
+                    </div>
+                    <div class="tree-level tree-collapsible open" id="tree-level-3-2">
+                        <div class="tree-node">
+                            <span class="level-tag level-字型">字型</span>
+                            <span class="variant-list" id="variant-zhao-style2"></span>
+                        </div>
+                    </div>
+
+                    <!-- 字样3：照丙（有图片） -->
+                    <div class="tree-node tree-toggle" data-target="tree-level-3-3">
+                        <span class="arrow open">▶</span>
+                        <span class="level-tag level-字样">字样</span>
+                        <span class="char-example">照丙</span>
+                        <span class="char-desc"><img src="zhao3.jpg" alt="zhao3"> 样式3</span>
+                    </div>
+                    <div class="tree-level tree-collapsible open" id="tree-level-3-3">
+                        <div class="tree-node">
+                            <span class="level-tag level-字型">字型</span>
+                            <span class="variant-list" id="variant-zhao-style3"></span>
+                        </div>
+                    </div>
+
+                    <!-- 字样4：照丁（无图片，显示文字“照”） -->
+                    <div class="tree-node tree-toggle" data-target="tree-level-3-4">
+                        <span class="arrow open">▶</span>
+                        <span class="level-tag level-字样">字样</span>
+                        <span class="char-example">照丁</span>
+                        <span class="char-desc" style="font-size:1.2rem; font-weight:600; background:#e8ddd0;">照</span>
+                    </div>
+                    <div class="tree-level tree-collapsible open" id="tree-level-3-4">
+                        <div class="tree-node">
+                            <span class="level-tag level-字型">字型</span>
+                            <span class="variant-list" id="variant-zhao-style4"></span>
+                        </div>
+                    </div>
+
+                    <!-- 字样5：照戊（无图片，显示文字“炤”） -->
+                    <div class="tree-node tree-toggle" data-target="tree-level-3-5">
+                        <span class="arrow open">▶</span>
+                        <span class="level-tag level-字样">字样</span>
+                        <span class="char-example">照戊</span>
+                        <span class="char-desc" style="font-size:1.2rem; font-weight:600; background:#e8ddd0;">炤</span>
+                    </div>
+                    <div class="tree-level tree-collapsible open" id="tree-level-3-5">
+                        <div class="tree-node">
+                            <span class="level-tag level-字型">字型</span>
+                            <span class="variant-list" id="variant-zhao-style5"></span>
+                        </div>
+                    </div>
+
+                    <!-- 字样6：照己（有图片） -->
+                    <div class="tree-node tree-toggle" data-target="tree-level-3-6">
+                        <span class="arrow open">▶</span>
+                        <span class="level-tag level-字样">字样</span>
+                        <span class="char-example">照己</span>
+                        <span class="char-desc"><img src="zhao6.jpg" alt="zhao6"> 样式6</span>
+                    </div>
+                    <div class="tree-level tree-collapsible open" id="tree-level-3-6">
+                        <div class="tree-node">
+                            <span class="level-tag level-字型">字型</span>
+                            <span class="variant-list" id="variant-zhao-style6"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 字式：曌 -->
+                <div class="tree-node tree-toggle" data-target="tree-level-2-2">
+                    <span class="arrow open">▶</span>
+                    <span class="level-tag level-字式">字式</span>
+                    <span class="char-example">曌</span>
+                    <span class="char-desc">从明从空（武则天造字）</span>
+                </div>
+                <div class="tree-level tree-collapsible open" id="tree-level-2-2">
+                    <div class="tree-node tree-toggle" data-target="tree-level-3-7">
+                        <span class="arrow open">▶</span>
+                        <span class="level-tag level-字样">字样</span>
+                        <span class="char-example">曌</span>
+                        <span class="char-desc" style="font-size:1.2rem; font-weight:600; background:#e8ddd0;">曌</span>
+                    </div>
+                    <div class="tree-level tree-collapsible open" id="tree-level-3-7">
+                        <div class="tree-node">
+                            <span class="level-tag level-字型">字型</span>
+                            <span class="variant-list" id="variant-zhao-曌"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div style="margin-top:14px; padding:12px 18px; background:#f6f0e8; border-radius:10px; font-size:0.9rem; color:#5a4a3a;">
+            💡 <strong>图片加载说明：</strong>请将以下图片与网页放在同一文件夹：<br>
+            <span style="background:#e8ddd0; padding:2px 10px; border-radius:12px; display:inline-block; margin:4px 4px 0 0;">zhao1.jpg, zhao2.jpg, zhao3.jpg, zhao6.jpg</span> （字样代表图）<br>
+            <span style="background:#e8ddd0; padding:2px 10px; border-radius:12px; display:inline-block; margin:4px 4px 0 0;">zhao7.jpg ~ zhao9.jpg</span> （曌字型）<br>
+            <span style="background:#e8ddd0; padding:2px 10px; border-radius:12px; display:inline-block; margin:4px 4px 0 0;">zhao10.jpg ~ zhao21.jpg</span> （各字样字型，具体分组见下方）<br>
+            <span style="color:#b08968;">• 照甲字型：zhao10.jpg, zhao11.jpg, zhao12.jpg</span><br>
+            <span style="color:#b08968;">• 照乙字型：zhao13.jpg, zhao14.jpg</span><br>
+            <span style="color:#b08968;">• 照丙字型：zhao15.jpg, zhao16.jpg</span><br>
+            <span style="color:#b08968;">• 照丁字型：zhao17.jpg, zhao18.jpg</span><br>
+            <span style="color:#b08968;">• 照戊字型：zhao19.jpg, zhao20.jpg</span><br>
+            <span style="color:#b08968;">• 照己字型：zhao21.jpg</span><br>
+            <span style="color:#b08968; font-weight:600;">注意：zhao4.jpg、zhao5.jpg、zhao22.jpg 不再需要。</span>
+        </div>
+        <div class="fig-caption">图X+1：“照”字四级层级标注示例（字型位置自动加载碑刻字形图片）</div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 步骤3：字段结构 -->
+    <!-- ============================================================ -->
+    <div class="section-card" id="step3">
+        <div class="section-title">3. 数据库字段结构</div>
+        <div class="section-desc">
+            核心字段包括：字料ID、字形图片、正字、层级、所属上层节点、出处、例句、字形类别。
+            其中“字形类别”字段用于区分<strong>传承俗字、变异俗字、民族古文字</strong>。
+        </div>
+        <div class="field-table">
+            <div class="ft-item"><span class="label">字料ID</span><span class="desc">唯一标识</span></div>
+            <div class="ft-item"><span class="label">字形图片</span><span class="desc">存储具体书写形态（字型）</span></div>
+            <div class="ft-item"><span class="label">正字</span><span class="desc">对应的规范字或音义</span></div>
+            <div class="ft-item"><span class="label">层级</span><span class="desc">字种 / 字式 / 字样 / 字型 / 民族古文字</span></div>
+            <div class="ft-item"><span class="label">所属上层节点</span><span class="desc">指向父层级，构建树形关联</span></div>
+            <div class="ft-item"><span class="label">石刻出处</span><span class="desc">碑名、位置、年代</span></div>
+            <div class="ft-item"><span class="label">例句</span><span class="desc">包含该字形的石刻原文</span></div>
+            <div class="ft-item"><span class="label">字形类别</span><span class="desc">传承俗字 / 变异俗字 / 民族古文字</span></div>
+        </div>
+        <div class="fig-caption">图X+2：数据库核心字段结构</div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 步骤4：检索功能 -->
+    <!-- ============================================================ -->
+    <div class="section-card" id="step4">
+        <div class="section-title">4. 检索功能实现</div>
+        <div class="section-desc">
+            支持按<strong>字种名、层级（四级）、字形类别（三类）</strong>多维度组合检索。
+            参照张健（2021）“按需调取”原则：大众科普在字种层，专业研究在字式/字样层，文字学本体研究保留字型层。
+        </div>
+        <div class="search-area">
+            <input type="text" id="searchInput" placeholder="输入字种、例字或例句关键词…">
+            <div class="filters" id="filterGroup">
+                <button class="active" data-filter="all">全部</button>
+                <button data-filter="字种">字种</button>
+                <button data-filter="字式">字式</button>
+                <button data-filter="字样">字样</button>
+                <button data-filter="字型">字型</button>
+                <button data-filter="民族古文字">民族文字</button>
+            </div>
+        </div>
+        <div id="searchResults" class="search-results"></div>
+        <div class="fig-caption">图X+3：检索界面（按层级筛选 + 关键词搜索）</div>
+    </div>
+
+</div>
+
+<script>
+    // ============================================================
+    // 1. 字料数据（最终确认版）
+    // ============================================================
+    const cardData = [
+        { char: '䂖', layer: '字型', parent: '石', category: '传承俗字', sub: '笔画增繁', example: '䂖澗龍泉' },
+        { char: '𠕂', layer: '字型', parent: '再', category: '传承俗字', sub: '笔画减省', example: '𠕂折山濤柬' },
+        { char: '従', layer: '字型', parent: '從', category: '传承俗字', sub: '笔画变形', example: '隨従子弟多北人' },
+        { char: '𤟙', layer: '字样', parent: '然', category: '传承俗字', sub: '部件位移', example: '恐𤟙喜空谷' },
+        { char: '𨓱', layer: '字式', parent: '逃', category: '传承俗字', sub: '部件改变', example: '𨓱禪山中宿' },
+        { char: '採', layer: '字式', parent: '采', category: '传承俗字', sub: '增加意符', example: '採藥還丹虎豹降' },
+        { char: '𠬧', layer: '字式', parent: '收', category: '传承俗字', sub: '改换意符', example: '成熟凖𠬧' },
+        { char: '寔', layer: '字式', parent: '實', category: '传承俗字', sub: '改意符为声符', example: '折寔紋銀' },
+        { char: '窓', layer: '字式', parent: '窗', category: '传承俗字', sub: '改换声符', example: '翠微窓' },
+        { char: '𤋜', layer: '字式', parent: '照', category: '传承俗字', sub: '古形楷化', example: '𤋜陽關' },
+        { char: '凢', layer: '字型', parent: '凡', category: '传承俗字', sub: '笔画变形', example: '清幽不似塵凢景，石榻如懸待絳仙。' },
+        { char: '峯', layer: '字样', parent: '峰', category: '传承俗字', sub: '部件位移', example: '公暇遊中山公園，見巨石矗立類桂林之獨秀峯，喜而問之。' },
+        { char: '淰', layer: '民族古文字', parent: 'nam4(水)', category: '民族古文字', sub: '方块壮字', example: '鵝泉□淰' },
+        { char: '姉', layer: '民族古文字', parent: 'tsi6(姐姐)', category: '民族古文字', sub: '喃字', example: '姉大安' },
+        { char: '决', layer: '民族古文字', parent: 'kvet7', category: '民族古文字', sub: '方块壮字', example: '决姑寬' },
+        { char: '渃', layer: '民族古文字', parent: 'nɯək7', category: '民族古文字', sub: '喃字', example: '農有渃' },
+    ];
+
+    // ============================================================
+    // 2. 渲染字形采集
+    // ============================================================
+    const entryGrid = document.getElementById('entryGrid');
+    const catBtns = document.querySelectorAll('#categoryTabs button');
+    let currentCat = 'all';
+
+    function renderCards() {
+        const filtered = cardData.filter(item => {
+            if (currentCat === 'all') return true;
+            return item.category === currentCat;
+        });
+        let html = '';
+        filtered.forEach(item => {
+            const layerClass = 
+                item.layer === '字种' ? 'tag-字种' :
+                item.layer === '字式' ? 'tag-字式' :
+                item.layer === '字样' ? 'tag-字样' :
+                item.layer === '字型' ? 'tag-字型' :
+                'tag-民族古文字';
+            html += `
+                <div class="entry-card">
+                    <div class="char-img">${item.char}</div>
+                    <div class="field"><span>正字：</span>${item.parent}</div>
+                    <div class="field"><span>类别：</span>${item.sub}</div>
+                    <div class="field"><span>例句：</span>${item.example || '—'}</div>
+                    <span class="tag ${layerClass}">${item.layer}</span>
+                </div>
+            `;
+        });
+        entryGrid.innerHTML = html || '<div style="padding:30px;text-align:center;color:#8a7a6a;">暂无字料</div>';
+    }
+
+    catBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            catBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentCat = this.dataset.cat;
+            renderCards();
+        });
+    });
+    renderCards();
+
+    // ============================================================
+    // 3. 字型图片自动加载（树形结构用）
+    // ============================================================
+    const variantImageMap = {
+        'variant-zhao-style1': ['zhao10.jpg', 'zhao11.jpg', 'zhao12.jpg'],
+        'variant-zhao-style2': ['zhao13.jpg', 'zhao14.jpg'],
+        'variant-zhao-style3': ['zhao15.jpg', 'zhao16.jpg'],
+        'variant-zhao-style4': ['zhao17.jpg', 'zhao18.jpg'],
+        'variant-zhao-style5': ['zhao19.jpg', 'zhao20.jpg'],
+        'variant-zhao-style6': ['zhao21.jpg'],
+        'variant-zhao-曌': ['zhao7.jpg', 'zhao8.jpg', 'zhao9.jpg'],
+    };
+
+    Object.keys(variantImageMap).forEach(containerId => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const fileNames = variantImageMap[containerId];
+        let html = '';
+        fileNames.forEach((fileName) => {
+            html += `<img src="${fileName}" alt="${fileName}" class="variant-img"
+                          onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                      <span class="variant-img-fallback" style="display:none;">[${fileName} 未找到]</span>`;
+        });
+        container.innerHTML = html;
+    });
+
+    // ============================================================
+    // 4. 树形折叠
+    // ============================================================
+    document.querySelectorAll('.tree-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const target = document.getElementById(this.dataset.target);
+            if (!target) return;
+            target.classList.toggle('open');
+            target.classList.toggle('closed');
+            const arrow = this.querySelector('.arrow');
+            if (arrow) arrow.classList.toggle('open');
+        });
+    });
+    document.querySelectorAll('.tree-collapsible').forEach(el => {
+        el.classList.add('open');
+        el.classList.remove('closed');
+    });
+
+    // ============================================================
+    // 5. 检索功能
+    // ============================================================
+    const resultsEl = document.getElementById('searchResults');
+    const searchInput = document.getElementById('searchInput');
+    const filterBtns = document.querySelectorAll('#filterGroup button');
+    let currentLayerFilter = 'all';
+    let currentKeyword = '';
+
+    const searchData = cardData.map(item => ({
+        ...item,
+        layer: item.layer === '民族古文字' ? '民族古文字' : item.layer
+    }));
+
+    function renderSearch() {
+        const filtered = searchData.filter(item => {
+            if (currentLayerFilter !== 'all' && item.layer !== currentLayerFilter) return false;
+            if (currentKeyword.trim() !== '') {
+                const kw = currentKeyword.trim().toLowerCase();
+                const matchChar = item.char.toLowerCase().includes(kw);
+                const matchParent = (item.parent || '').toLowerCase().includes(kw);
+                const matchExample = (item.example || '').toLowerCase().includes(kw);
+                const matchSub = (item.sub || '').toLowerCase().includes(kw);
+                if (!(matchChar || matchParent || matchExample || matchSub)) return false;
+            }
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            resultsEl.innerHTML = '<div class="empty-msg">没有匹配的字料，试试其他关键词或筛选条件。</div>';
+            return;
+        }
+        let html = '';
+        filtered.forEach(item => {
+            const layerClass = 
+                item.layer === '字种' ? 'tag-字种' :
+                item.layer === '字式' ? 'tag-字式' :
+                item.layer === '字样' ? 'tag-字样' :
+                item.layer === '字型' ? 'tag-字型' :
+                'tag-民族古文字';
+            html += `
+                <div class="result-item">
+                    <div class="ri-char">${item.char}</div>
+                    <div class="ri-info">正字：${item.parent || '—'} ｜ ${item.sub || ''}</div>
+                    <div class="ri-info">${item.example || ''}</div>
+                    <span class="ri-layer ${layerClass}">${item.layer}</span>
+                </div>
+            `;
+        });
+        resultsEl.innerHTML = html;
+    }
+
+    searchInput.addEventListener('input', () => {
+        currentKeyword = searchInput.value;
+        renderSearch();
+    });
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentLayerFilter = this.dataset.filter;
+            renderSearch();
+        });
+    });
+    renderSearch();
+
+    // ============================================================
+    // 6. 步骤导航
+    // ============================================================
+    document.querySelectorAll('.steps-nav .step').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = document.getElementById(this.dataset.target);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.querySelectorAll('.steps-nav .step').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+    window.addEventListener('scroll', () => {
+        const ids = ['step1','step2','step3','step4'];
+        let current = 'step1';
+        for (let id of ids) {
+            const el = document.getElementById(id);
+            if (el && el.getBoundingClientRect().top <= 150) current = id;
+        }
+        document.querySelectorAll('.steps-nav .step').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.target === current);
+        });
+    });
+</script>
+</body>
+</html>
